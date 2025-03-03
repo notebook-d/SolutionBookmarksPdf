@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Forms>
+    <Form>
+      <DocumentType>ТЛ</DocumentType>
+      <Standard>ГОСТ 3.1105-2011</Standard>
+      <FormName>Форма 2</FormName>
+      <DocumentVid>General</DocumentVid>
+    </Form>
+    <Form>
+      <DocumentType>МК</DocumentType>
+      <Standard>ГОСТ 3.1118-82</Standard>
+      <FormName>Форма 1</FormName>
+      <DocumentVid>MultipleWorkshops</DocumentVid>
+    </Form>
+    <Form>
+      <DocumentType>МК</DocumentType>
+      <Standard>ГОСТ 3.1118-82</Standard>
+      <FormName>Форма 1б</FormName>
+      <DocumentVid>MultipleWorkshops</DocumentVid>
+    </Form>
+  </Forms>
+  <GlobalSettings>
+    <StandardAndFormArea>
+      <TopLeft X="240.15" Y="208.3" />
+      <BottomRight X="291.5" Y="204.05" />
+    </StandardAndFormArea>
+    <TypeDocumentArea>
+      <TopLeft X="5.5" Y="8.5" />
+      <BottomRight X="28.9" Y="0" />
+    </TypeDocumentArea>
+  </GlobalSettings>
+</Config>

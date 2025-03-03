@@ -2,14 +2,78 @@
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Forms>
     <Form>
+      <DocumentType>ТЛ</DocumentType>
+      <Standard>ГОСТ 3.1105-2011</Standard>
+      <FormName>Форма 2</FormName>
+      <DocumentVid>General</DocumentVid>
+      <DocumentPriznak>FirstList</DocumentPriznak>
+    </Form>
+    <Form>
       <DocumentType>МК</DocumentType>
       <Standard>ГОСТ 3.1118-82</Standard>
       <FormName>Форма 1</FormName>
+      <DocumentVid>MultipleWorkshops</DocumentVid>
+      <DocumentPriznak>FirstList</DocumentPriznak>
     </Form>
     <Form>
       <DocumentType>МК</DocumentType>
       <Standard>ГОСТ 3.1118-82</Standard>
       <FormName>Форма 1б</FormName>
+      <DocumentVid>MultipleWorkshops</DocumentVid>
+      <DocumentPriznak>NextList</DocumentPriznak>
+    </Form>
+    <Form>
+      <DocumentType>ОК</DocumentType>
+      <Standard>ГОСТ 3.1404-86</Standard>
+      <FormName>Форма 3</FormName>
+      <DocumentVid>General</DocumentVid>
+      <DocumentPriznak>FirstList</DocumentPriznak>
+      <CehArea>
+        <TopLeft X="240.15" Y="208.3" />
+        <BottomRight X="291.5" Y="204.05" />
+      </CehArea>
+    </Form>
+    <Form>
+      <DocumentType>ОК</DocumentType>
+      <Standard>ГОСТ 3.1404-86</Standard>
+      <FormName>Форма 2а</FormName>
+      <DocumentVid>General</DocumentVid>
+      <DocumentPriznak>FirstList</DocumentPriznak>
+    </Form>
+    <Form>
+      <DocumentType>ОК</DocumentType>
+      <Standard>ГОСТ 3.1502-85</Standard>
+      <FormName>Форма 2</FormName>
+      <DocumentVid>General</DocumentVid>
+      <DocumentPriznak>FirstList</DocumentPriznak>
+    </Form>
+    <Form>
+      <DocumentType>ОК</DocumentType>
+      <Standard>ГОСТ 3.1502-85</Standard>
+      <FormName>Форма 2а</FormName>
+      <DocumentVid>General</DocumentVid>
+      <DocumentPriznak>FirstList</DocumentPriznak>
+    </Form>
+    <Form>
+      <DocumentType>ВО</DocumentType>
+      <Standard>ГОСТ 3.1122-84</Standard>
+      <FormName>Форма 3</FormName>
+      <DocumentVid>General</DocumentVid>
+      <DocumentPriznak>FirstList</DocumentPriznak>
+    </Form>
+    <Form>
+      <DocumentType>ВО</DocumentType>
+      <Standard>ГОСТ 3.1122-84</Standard>
+      <FormName>Форма 3а</FormName>
+      <DocumentVid>General</DocumentVid>
+      <DocumentPriznak>FirstList</DocumentPriznak>
+    </Form>
+    <Form>
+      <DocumentType>КЭ</DocumentType>
+      <Standard>ГОСТ 3.1105-84</Standard>
+      <FormName>Форма 7а</FormName>
+      <DocumentVid>General</DocumentVid>
+      <DocumentPriznak>FirstList</DocumentPriznak>
     </Form>
   </Forms>
   <GlobalSettings>

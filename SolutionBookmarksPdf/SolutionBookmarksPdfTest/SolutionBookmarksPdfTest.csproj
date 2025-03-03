@@ -53,9 +53,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BookmarksPdf\BookmarksPdf.csproj">
-      <Project>{48b5530d-29c8-489d-97dc-5a5739f6d719}</Project>
-      <Name>BookmarksPdf</Name>
+    <ProjectReference Include="..\PdfTools\PdfTools.csproj">
+      <Project>{A52AE158-6EB5-4A9F-B68A-A1F6EE408581}</Project>
+      <Name>PdfTools</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

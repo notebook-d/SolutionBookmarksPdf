@@ -1,4 +1,4 @@
-﻿using BookmarksPdf.Enums;
+﻿using PdfTools.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace BookmarksPdf
+namespace PdfTools.Settings
 {
     public class FormDocums
     {        
@@ -14,6 +14,7 @@ namespace BookmarksPdf
         public string Standard { get; set; }        
         public string FormName { get; set; }
         public DocumentVidEnum DocumentVid { get; set; }
+        public DocumentPriznakEnum DocumentPriznak { get; set; }
 
         public FormDocums()
         {
@@ -21,9 +22,11 @@ namespace BookmarksPdf
 
         public Area CehArea { get; set; }
 
+        public Area OperArea { get; set; }
+
         public override string ToString()
         {
-            return $"{DocumentType}|{Standard}|{FormName}|{DocumentVid}";
+            return $"{DocumentType}|{Standard}|{FormName}|{DocumentVid}|{DocumentPriznak}";
         }
     }
 }

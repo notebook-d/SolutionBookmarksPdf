@@ -1,5 +1,5 @@
-﻿using BookmarksPdf;
-using BookmarksPdf.Settings;
+﻿using PdfTools;
+using PdfTools.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,38 +13,48 @@ namespace SolutionBookmarksPdfTest
         static void Main(string[] args)
         {
 
-            ConfigurationFile configurationFile = new ConfigurationFile();
+            //ConfigurationFile configurationFile = new ConfigurationFile();
 
-            configurationFile.Forms.Add(new FormDocums { DocumentType = "МК", Standard = "ГОСТ 3.1118-82", FormName = "Форма 1" });
-            configurationFile.Forms.Add(new FormDocums { DocumentType = "МК", Standard = "ГОСТ 3.1118-82", FormName = "Форма 1б" });
-
-
-            Area standardAndFormArea = new Area();
-            standardAndFormArea.TopLeft = new Coordinates(240.15, 208.3);
-            standardAndFormArea.BottomRight = new Coordinates(291.5, 204.05);
-
-            Area typeDocumentArea = new Area();
-            typeDocumentArea.TopLeft = new Coordinates(5.5, 8.5);
-            typeDocumentArea.BottomRight = new Coordinates(28.9, 0);
+            //configurationFile.Forms.Add(new FormDocums { DocumentType = "МК", Standard = "ГОСТ 3.1118-82", FormName = "Форма 1", DocumentVid = BookmarksPdf.Enums.DocumentVidEnum.MultipleWorkshops });
+            //configurationFile.Forms.Add(new FormDocums { DocumentType = "МК", Standard = "ГОСТ 3.1118-82", FormName = "Форма 1б", DocumentVid = BookmarksPdf.Enums.DocumentVidEnum.MultipleWorkshops });
 
 
-            GlobalSettings globalSettings = new GlobalSettings();
-            globalSettings.StandardAndFormArea = standardAndFormArea;
-            globalSettings.TypeDocumentArea = typeDocumentArea;
+            //Area standardAndFormArea = new Area();
+            //standardAndFormArea.TopLeft = new Coordinates(240.15, 208.3);
+            //standardAndFormArea.BottomRight = new Coordinates(291.5, 204.05);
+
+            //Area typeDocumentArea = new Area();
+            //typeDocumentArea.TopLeft = new Coordinates(5.5, 8.5);
+            //typeDocumentArea.BottomRight = new Coordinates(28.9, 0);
+
+
+            //GlobalSettings globalSettings = new GlobalSettings();
+            //globalSettings.StandardAndFormArea = standardAndFormArea;
+            //globalSettings.TypeDocumentArea = typeDocumentArea;
             
 
-            configurationFile.GlobalSettings = globalSettings;
+            //configurationFile.GlobalSettings = globalSettings;
 
-            ConfigurationFile.SaveXml<ConfigurationFile>(configurationFile, "D:\\BookmarksPdf.xml");
+            //ConfigurationFile.SaveXml<ConfigurationFile>(configurationFile, "D:\\BookmarksPdf.xml");
 
 
 
-            //// Загружаем настроечный файл
+            ////// Загружаем настроечный файл
             var configFile2 = ConfigurationFile.ReadXml<ConfigurationFile>("BookmarksPdf.xml");
 
-            ////Находим Тип, Стандарт, Форма
-            HelperPdf helperPdf = new HelperPdf();
-            helperPdf.LoadInfoDocuments("ИТП без закладок.pdf", configFile2);
+            //////Находим Тип, Стандарт, Форма
+            //HelperPdf helperPdf = new HelperPdf();
+            //helperPdf.ExtractTextWithCoordinatesNew("D:\\ИТП без закладок.pdf", configFile2);
+
+            //helperPdf.LoadInfoDocuments("ИТП без закладок.pdf", configFile2);
+            //HelperPdf helperPdf = new HelperPdf();
+            //helperPdf.LoadInfoListITextSharp("ИТП без закладок.pdf", configFile2);
+            //helperPdf.LoadInfoListITextSharp2("ИТП без закладок.pdf");
+            //Создаем закладку
+            //helperPdf.CreateBookmarks();
+
+            PdfHelper helperPdf = new PdfHelper();
+            helperPdf.LoadInfoDocuments("D:\\ИТП без закладок.pdf", configFile2);
 
         }
     }

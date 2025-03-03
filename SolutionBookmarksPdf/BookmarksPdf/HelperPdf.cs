@@ -1,4 +1,7 @@
 ﻿using BookmarksPdf.Settings;
+using iText.Kernel.Pdf.Canvas.Parser.Listener;
+using iText.Kernel.Pdf.Canvas.Parser;
+using iText.Kernel.Pdf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +11,8 @@ using System.Web.Management;
 using System.Windows;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.Outline;
+using iText.Kernel.Pdf.Navigation;
+using PdfSharp.Pdf.IO;
 
 namespace BookmarksPdf
 {
@@ -19,14 +24,10 @@ namespace BookmarksPdf
         /// <param name="file"></param>
         public void LoadInfoDocuments(string file, ConfigurationFile configurationFile)
         {
-            var gostForma = configurationFile.GlobalSettings.StandardAndFormArea;
-            var forma821 = configurationFile.Forms.FirstOrDefault();
-
             List<string> result = new List<string>();            
 
             using (UglyToad.PdfPig.PdfDocument document = UglyToad.PdfPig.PdfDocument.Open(file))
             {
-
                 var isGetBook = document.TryGetBookmarks(out Bookmarks bookmarks);
 
                 foreach (Page page in document.GetPages())
@@ -35,33 +36,29 @@ namespace BookmarksPdf
                     var pageHeight = page.Height;
                     var pageWidth = page.Width;
 
-
                     IEnumerable<Word> words = page.GetWords();
 
                     var pageInfo = GetFormaDocument(words, configurationFile.GlobalSettings.StandardAndFormArea, configurationFile.GlobalSettings.TypeDocumentArea);
+                    if (pageInfo.DocumentVid == Enums.DocumentVidEnum.General)
+                    {
+                        //Создаём закладку-документ.Привязываем закладку к рассматриваемому листу.
+                        //Имя закладки создаётся по шаблону: «Тип документа». Например, «ТЛ»;
+                        GetBookmarks(document);
+                    }
 
-                    result.Add($"Страница {page.Number} {pageInfo.DocumentType}|{pageInfo.Standard}|{pageInfo.FormName}");
-
-
-                    //GetFormaDocuments(page, configurationFile);
-
-                    //IReadOnlyList<Letter> letters = page.Letters;
-                    //string example = string.Join(string.Empty, letters.Select(x => x.Value));
-
-
-
-                    //foreach (var word in words)
-                    //{
-                    //    var tst = word.Text;
-
-
-                    //}
-
-                    //IEnumerable<IPdfImage> images = page.GetImages();
+                    //result.Add($"Страница {page.Number} {pageInfo.DocumentType}|{pageInfo.Standard}|{pageInfo.FormName}");
+                    Console.WriteLine($"Страница {page.Number} {pageInfo.DocumentType}|{pageInfo.Standard}|{pageInfo.FormName}");
+                    
                 }
             }
 
-            MessageBox.Show(string.Join(Environment.NewLine, result));
+            //MessageBox.Show(string.Join(Environment.NewLine, result));
+        }
+
+        public void GetBookmarks(UglyToad.PdfPig.PdfDocument document)
+        {
+            var getBook = document.TryGetBookmarks(out Bookmarks bookmarks);
+            
         }
 
         /// <summary>
@@ -224,5 +221,220 @@ namespace BookmarksPdf
             // Проверяем, находятся ли все произведения с одной стороны
             return (d1 >= 0 && d2 >= 0 && d3 >= 0 && d4 >= 0) || (d1 <= 0 && d2 <= 0 && d3 <= 0 && d4 <= 0);
         }
+
+        #region itext7
+
+        public void LoadInfoListITextSharp(string file, ConfigurationFile configurationFile)
+        {
+
+            List<TextChunk> textChunks = ExtractTextWithCoordinatesNew(file, configurationFile);
+
+            foreach (var chunk in textChunks)
+            {
+                Console.WriteLine(chunk);
+            }
+
+
+            //using (PdfReader reader = new PdfReader(file))
+            //using (PdfDocument document = new PdfDocument(reader))
+            //{
+            //    string text = "";
+            //    for (int i = 1; i <= document.GetNumberOfPages(); i++)
+            //    {
+            //        text += iText.Kernel.Pdf.Canvas.Parser.PdfTextExtractor.GetTextFromPage(document.GetPage(i));
+            //    }                
+            //}
+
+        }
+
+        //public static List<TextChunk> ExtractTextWithCoordinates(string pdfPath)
+        //{
+        //    var textChunks = new List<TextChunk>();
+
+        //    using (PdfReader reader = new PdfReader(pdfPath))
+        //    using (PdfDocument document = new PdfDocument(reader))
+        //    {
+        //        for (int i = 1; i <= document.GetNumberOfPages(); i++)
+        //        {
+        //            var strategy = new TextLocationStrategy();
+        //            PdfCanvasProcessor parser = new PdfCanvasProcessor(strategy);
+        //            parser.ProcessPageContent(document.GetPage(i));
+
+        //            textChunks.AddRange(strategy.GetTextChunks());
+        //        }
+        //    }
+
+        //    return textChunks;
+        //}
+
+        public List<TextChunk> ExtractTextWithCoordinatesNew(string pdfPath, ConfigurationFile configurationFile)
+        {
+            var textChunks = new List<TextChunk>();
+
+            string outputPdf = "D:\\ИТП без закладок 2.pdf";
+
+            using (iText.Kernel.Pdf.PdfReader reader = new iText.Kernel.Pdf.PdfReader(pdfPath))
+            using (PdfWriter writer = new PdfWriter(outputPdf))
+            using (PdfDocument document = new PdfDocument(reader, writer))
+            {
+                for (int i = 1; i <= document.GetNumberOfPages(); i++)
+                {
+                    var strategy = new TextLocationStrategy();
+                    PdfCanvasProcessor parser = new PdfCanvasProcessor(strategy);
+                    PdfPage pdfPage = document.GetPage(i);
+                    parser.ProcessPageContent(pdfPage);
+
+                    FormDocums formDocums = ExtractFormPage(i, strategy.GetTextChunks(), configurationFile);
+                    if (formDocums != null)
+                    {
+                        Console.WriteLine($"{formDocums}");
+                        if (formDocums.DocumentVid == Enums.DocumentVidEnum.General)
+                        {
+                            //Создаем закладку
+                            //CreateBookmarks(document, pdfPage);
+                        }
+                    }
+                }
+            }
+
+            return textChunks;
+        }
+        /// <summary>
+        /// Создает закладку
+        /// </summary>
+        public void CreateBookmarks(PdfDocument pdfDoc, PdfPage pdfPage)
+        {
+            // Получаем или создаем корневую структуру закладок
+            PdfOutline rootOutline = pdfDoc.GetOutlines(false); // Пытаемся получить существующие закладки
+            // Если структура закладок отсутствует, создаем ее
+            if (rootOutline == null)
+            {
+                rootOutline = pdfDoc.GetOutlines(true); // Создаем корневую структуру закладок
+            }
+
+            // Добавляем новую закладку
+            PdfOutline bookmark = rootOutline.AddOutline("Моя закладка");
+
+
+            // Указываем, куда ведет закладка (на первую страницу)
+            PdfDestination destination = PdfExplicitDestination.CreateFit(pdfPage);
+            bookmark.AddDestination(destination);
+        }
+
+        /// <summary>
+        /// Возвращает Тип, ГОСТ и Форму листа
+        /// </summary>
+        /// <param name="pdfPath"></param>
+        /// <returns></returns>
+        public FormDocums ExtractFormPage(int numberPage, List<TextChunk> textChunks, ConfigurationFile configurationFile)
+        {
+            var gostForma = configurationFile.GlobalSettings.StandardAndFormArea;
+            var typeDocums = configurationFile.GlobalSettings.TypeDocumentArea;
+
+            var standartForma = string.Empty;
+            var documentType = string.Empty;
+
+            foreach (var textChunk in textChunks)
+            {
+                
+                var isPointInRectangle = IsPointInRotatedRectangle(gostForma, textChunk.RectangleCenter);
+                if (isPointInRectangle)
+                {
+                    standartForma = textChunk.Text;
+                    Console.WriteLine($"Страница {numberPage}     {textChunk}   {gostForma}");
+                }
+
+                var isPointInRectangleTypeDocument = IsPointInRotatedRectangle(typeDocums, textChunk.RectangleCenter);
+                if (isPointInRectangleTypeDocument)
+                {
+                    documentType = textChunk.Text;
+                    Console.WriteLine($"Страница {numberPage}     {textChunk}   {gostForma}");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(documentType) && 
+                !string.IsNullOrEmpty(standartForma))
+            {
+                var standartFormaList = GetStandartForma(standartForma);                
+                var result = configurationFile.Forms.FirstOrDefault(n => 
+                n.DocumentType == documentType 
+                && n.Standard == standartFormaList.Item1
+                && n.FormName == standartFormaList.Item2
+                );
+
+                return result;
+            }
+
+            return null;
+        }
+
+        public (string, string) GetStandartForma(string standartForma)
+        {
+            if (string.IsNullOrEmpty(standartForma)) return (string.Empty, string.Empty);
+
+            // Находим индекс начала слова "Форма"
+            int indexOfForma = standartForma.IndexOf("Форма");
+
+            if (indexOfForma == -1) return (string.Empty, string.Empty);
+
+            // Извлекаем первую часть строки до "Форма"
+            string gost = standartForma.Substring(0, indexOfForma).Trim();
+
+            // Извлекаем вторую часть строки, начиная с "Форма"
+            string forma = standartForma.Substring(indexOfForma).Trim();
+
+            return (gost, forma);
+        }
+
+        #endregion
+
+        #region itext7-2
+
+        public void LoadInfoListITextSharp2(string file)
+        {
+            using (PdfDocument pdfDoc = new PdfDocument(new iText.Kernel.Pdf.PdfReader(file)))
+            {
+                // Создаем слушатель для извлечения слов
+                var listener = new WordExtractionListener();
+
+                // Обрабатываем каждую страницу
+                for (int i = 1; i <= pdfDoc.GetNumberOfPages(); i++)
+                {
+                    PdfPage page = pdfDoc.GetPage(i);
+                    PdfCanvasProcessor parser = new PdfCanvasProcessor(listener);
+                    parser.ProcessPageContent(page);
+                }
+
+                // Выводим извлеченные слова с координатами
+                foreach (var word in listener.Words)
+                {
+                    Console.WriteLine($"Текст: {word.Text} Нижний левый: ({word.BottomLeft.GetX()}, {word.BottomLeft.GetY()}) Нижний правый: ({word.BottomRight.GetX()}, {word.BottomRight.GetY()}) Верхний левый: ({word.TopLeft.GetX()}, {word.TopLeft.GetY()}) Верхний правый: ({word.TopRight.GetX()}, {word.TopRight.GetY()})");                    
+                    Console.WriteLine();
+                }
+            }
+
+        }
+               
+
+        #endregion
+
+        public void CreateBookmarks()
+        {
+            // Путь к существующему PDF
+            string inputPdf = "D:\\ИТП без закладок.pdf";
+            // Путь для сохранения измененного PDF
+            string outputPdf = "D:\\ИТП без закладок.pdf";
+
+            // Открываем существующий PDF
+            PdfSharp.Pdf.PdfDocument document = PdfSharp.Pdf.IO.PdfReader.Open(inputPdf, PdfDocumentOpenMode.Modify);
+            // Добавляем закладку
+            PdfSharp.Pdf.PdfOutline outline = document.Outlines.Add("Моя закладка", document.Pages[1], true);
+
+            // Сохраняем изменения
+            document.Save(outputPdf);
+        }
+
+
+
     }
 }
